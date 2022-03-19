@@ -40,8 +40,13 @@ if __name__ == '__main__':
 			upper = np.array([40,255,255])
 			# apply filter to image
 			masked_img = cv2.inRange(hsv, lower, upper)
+			# make the rectanlge to filter out extra noise in surrounding area
+			circle = np.zeros((720,1280), dtype="uint8")
+			cv2.circle(circle, (535,300), 150, 255, -1)
+			# overlay filter on masked_img
+			filtered_img = cv2.bitwise_and(masked_img, circle)
 			# convert it to ros msg and publish it
-			img_msg = CvBridge().cv2_to_imgmsg(masked_img, encoding="mono8")
+			img_msg = CvBridge().cv2_to_imgmsg(filtered_img, encoding="mono8")
 			# publish the image
 			img_pub.publish(img_msg)
 		# pause until the next iteration			
